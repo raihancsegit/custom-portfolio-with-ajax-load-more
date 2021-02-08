@@ -36,8 +36,9 @@ class OurBookPlugin {
 		add_action( 'plugins_loaded', array( $this, 'book_load_textdomain' ) );
 		add_action( 'admin_menu', array( $this, 'book_add_metabox' ) );
 		add_action( 'save_post', array( $this, 'book_save_image' ) );
-
+		add_shortcode( 'books', array( $this,'Bood_Shortcode_Add') );
 		add_action( 'admin_enqueue_scripts', array( $this, 'book_admin_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'book_fontend_assets' ) );
 
 		$this->load_includes();
 	}
@@ -59,13 +60,189 @@ class OurBookPlugin {
 
     }
 
+	function book_fontend_assets(){
+		wp_enqueue_style( 'book-bootstrap', plugin_dir_url( __FILE__ ) . "assets/css/bootstrap.css", null, BOOK_HELPER_VERSION );
+		wp_enqueue_style( 'book-porfolio-style', plugin_dir_url( __FILE__ ) . "assets/css/portfolio.css", null, BOOK_HELPER_VERSION );
+
+		wp_enqueue_script( 'book-bootstrap-js', plugin_dir_url( __FILE__ ) . "assets/js/bootstrap.min.js", array(
+			'jquery',
+		), BOOK_HELPER_VERSION, true );
+		
+		wp_enqueue_script( 'magnific-popup-options-js', plugin_dir_url( __FILE__ ) . "assets/js/magnific-popup-options.js", array(
+			'jquery',
+		), BOOK_HELPER_VERSION, true );
+
+		wp_enqueue_script( 'imagesloaded-js', plugin_dir_url( __FILE__ ) . "assets/js/imagesloaded.js", array(
+			'jquery',
+		), BOOK_HELPER_VERSION, true );
+
+		wp_enqueue_script( 'isotope-js', plugin_dir_url( __FILE__ ) . "assets/js/isotope.pkgd.min.js", array(
+			'jquery',
+		), BOOK_HELPER_VERSION, true );
+
+		wp_enqueue_script( 'book-isotope-js', plugin_dir_url( __FILE__ ) . "assets/js/jquery.isotope.js", array(
+			'jquery',
+		), BOOK_HELPER_VERSION, true );
+
+		wp_enqueue_script( 'portfolio-js', plugin_dir_url( __FILE__ ) . "assets/js/portfolio.js", array(
+			'jquery',
+			'magnific-popup-options-js',
+		     'imagesloaded-js',
+		     'isotope-js'
+		), BOOK_HELPER_VERSION, true );
+	}
+
 	function book_admin_assets() {
-		wp_enqueue_style( 'omb-admin-style', plugin_dir_url( __FILE__ ) . "assets/admin/css/style.css", null, time() );
+		wp_enqueue_style( 'book-admin-style', plugin_dir_url( __FILE__ ) . "assets/admin/css/style.css", null, time() );
 		wp_enqueue_style( 'jquery-ui-css', '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css', null, time() );
-		wp_enqueue_script( 'omb-admin-js', plugin_dir_url( __FILE__ ) . "assets/admin/js/main.js", array(
+		wp_enqueue_script( 'book-admin-js', plugin_dir_url( __FILE__ ) . "assets/admin/js/main.js", array(
 			'jquery',
 			'jquery-ui-datepicker'
 		), time(), true );
+	}
+
+
+	function Bood_Shortcode_Add(){
+		ob_start();
+		?>
+
+<div class="section bg-white pt-2 pb-2 text-center" data-aos="fade">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <ul class="portfolio-filter text-center">
+                                <li class="active"><a href="#" data-filter="*"> All</a></li>
+                                <li><a href="#" data-filter=".cat1">Salad</a></li>
+                                <li><a href="#" data-filter=".cat2">Bread</a></li>
+                                <li><a href="#" data-filter=".cat3">Fish</a></li>
+                                <li><a href="#" data-filter=".cat4">Meat</a></li>
+                                <li><a href="#" data-filter=".cat5">Fruits</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="portfolio-grid portfolio-gallery grid-4 gutter">
+                            
+                            <div class="portfolio-item cat2 cat3 cat4">
+                                <a href="imgs/img1.jpg" class="portfolio-image popup-gallery" title="Bread">
+                                    <img src="imgs/img1.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Branding</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat2 cat3 cat4">
+                                <a href="imgs/img9.jpg" class="portfolio-image popup-gallery" title="Bread">
+                                    <img src="imgs/img9.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Branding</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat1 cat2 cat3">
+                                <a href="imgs/img2.jpg" class="portfolio-image popup-gallery" title="Design">
+                                    <img src="imgs/img2.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Design</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat1 cat4">
+                                <a href="imgs/img10.jpg" class="portfolio-image popup-gallery" title="Photography">
+                                    <img src="imgs/img10.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Photography</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat3 cat5">
+                                <a href="imgs/img4.jpg" class="portfolio-image popup-gallery" title="Marketing">
+                                    <img src="imgs/img4.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Marketing</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat4 cat5">
+                                <a href="imgs/img5.jpg" class="portfolio-image popup-gallery" title="Web Desgin">
+                                    <img src="imgs/img5.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Web Design</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat2 cat3">
+                                <a href="imgs/img7.jpg" class="portfolio-image popup-gallery" title="Media">
+                                    <img src="imgs/img7.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Media</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="portfolio-item cat3 cat4 cat5">
+                                <a href="imgs/img6.jpg" class="portfolio-image popup-gallery" title="Portfolio">
+                                    <img src="imgs/img6.jpg" alt=""/>
+                                    <div class="portfolio-hover-title">
+                                        <div class="portfolio-content">
+                                            <h4>Portfolio</h4>
+                                            <div class="portfolio-category">
+                                                <span>Cat 1</span>
+                                                <span>Cat 2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- .section -->
+
+		<?php 
+		return ob_get_clean();
 	}
 
 
@@ -111,9 +288,9 @@ class OurBookPlugin {
 	function book_add_metabox() {
 		add_meta_box(
 			'book_image_info',
-			__( 'Image Info', 'our-metabox' ),
+			__( 'Book Gallery', 'our-metabox' ),
 			array( $this, 'book_image_info' ),
-			array( 'post' )
+			array( 'book' )
 		);
 
 	}
