@@ -90,6 +90,8 @@ class OurBookPlugin {
 		     'imagesloaded-js',
 		     'isotope-js'
 		), BOOK_HELPER_VERSION, true );
+
+		wp_localize_script( 'portfolio-js', 'mealurl', array( 'ajaxurl' => $ajaxurl ) );
 	}
 
 	function book_admin_assets() {
