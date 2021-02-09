@@ -83,7 +83,7 @@ class OurBookPlugin {
 		     'isotope-js'
 		), BOOK_HELPER_VERSION, true );
 
-        
+
 	}
 
 	public function book_admin_assets() {
@@ -96,7 +96,7 @@ class OurBookPlugin {
 	}
 
     public function book_load_ajax(){
-				   			
+
         $args = array(
             'post_type' => 'book',
             'posts_per_page' => $_POST['postNumber'],
@@ -104,7 +104,7 @@ class OurBookPlugin {
         );
         $query = new WP_Query( $args );
 
-        // Book Loop						
+        // Book Loop
         if( $query->have_posts() ):
             while( $query->have_posts() ): $query->the_post();
             $image_url = esc_attr(get_post_meta(get_the_ID(),'book_image_url',true));
@@ -119,7 +119,7 @@ class OurBookPlugin {
                 }
             }
 
-?>		
+?>
         <div class="portfolio--item portfolio-item <?php echo esc_attr($id);?>">
             <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery" title="Bread">
                 <img src="<?php echo esc_url($image_url);?>" alt=""/>
@@ -133,13 +133,13 @@ class OurBookPlugin {
                 </div>
             </a>
         </div>
-        <?php 
+        <?php
         endwhile;
         wp_reset_postdata();
         endif;
         die();
-        ?>	
-    
+        ?>
+
     </div>
     <?php
     }
@@ -147,14 +147,14 @@ class OurBookPlugin {
 	public function book_shortcode_add(){
 		ob_start();
 		?>
-        <div class="portfolio--items section" data-aos="fade">
+        <div class="section" data-aos="fade">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="text-center">
                             <ul class="portfolio-filter text-center">
                                 <li class="active"><a href="#" data-filter="*"> All</a></li>
-                                <?php 
+                                <?php
                                     $category = get_terms( 'bookcategory', array( 'hide_empty' => true ));
                                     foreach ( $category as $w_cat ) :
                                         echo '<li><a href="#" data-filter=".'.$w_cat->slug.'-'.$w_cat->term_id.'">'.$w_cat->name.'</a></li>';
@@ -164,14 +164,14 @@ class OurBookPlugin {
                         </div>
 
                         <div class="portfolio-grid portfolio-gallery grid-4 gutter">
-                        <?php 
-					
+                        <?php
+
                             $args = array(
                                 'post_type' => 'book',
                                 'posts_per_page' => $this->postNumber,
                             );
                             $query = new WP_Query( $args );
-                    
+
                             // Localize
                             wp_localize_script(
                                 'portfolio-js',
@@ -187,8 +187,8 @@ class OurBookPlugin {
                                     'btnLodingLabel' => esc_html__( 'Loading....', 'textdomain' ),
                                 )
                             );
-                    
-                            // Book Loop						
+
+                            // Book Loop
                             if( $query->have_posts() ):
                                 while( $query->have_posts() ): $query->the_post();
                                 $image_url = esc_attr(get_post_meta(get_the_ID(),'book_image_url',true));
@@ -202,8 +202,8 @@ class OurBookPlugin {
                                         $id  .= ' '.$term->slug.'-'.$term->term_id;
                                     }
                                 }
-                    
-                          ?>		
+
+                          ?>
                             <div class="portfolio--item portfolio-item <?php echo esc_attr($id);?>">
                                 <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery" title="Bread">
                                     <img src="<?php echo esc_url($image_url);?>" alt=""/>
@@ -217,25 +217,25 @@ class OurBookPlugin {
                                     </div>
                                 </a>
                             </div>
-                            <?php 
+                            <?php
                             endwhile;
                             wp_reset_postdata();
                             echo '<span class="dataload"></span>';
                             endif;
-                            ?>	
-                        
+                            ?>
+
                         </div>
 
-                            
+
                     </div>
 
-                   
+
                 </div>
-                
+
             </div>
         </div> <!-- .section -->
 
-        <?php 
+        <?php
                                 // Portfolio Footer Start
                                 if( $query->max_num_pages > 0 ):
                                 ?>
@@ -244,13 +244,13 @@ class OurBookPlugin {
                                         <a class="btn loadAjax btn-default"><?php esc_html_e( 'Load More', 'book' ); ?></a>
                                     </div>
                                 </div>
-                                <?php 
+                                <?php
                                 endif;
                                 ?>
 
-                      
 
-		<?php 
+
+		<?php
 		return ob_get_clean();
 	}
 
@@ -324,7 +324,7 @@ class OurBookPlugin {
 					</div>
 					<div class="float_c"></div>
 				</div>
-				
+
 			</div>
 EOD;
 
@@ -332,10 +332,10 @@ EOD;
 
 	}
 
-	
 
 
-	
+
+
 }
 
 new OurBookPlugin();
