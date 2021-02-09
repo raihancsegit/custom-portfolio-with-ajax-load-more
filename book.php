@@ -163,12 +163,12 @@ class OurBookPlugin {
                             </ul>
                         </div>
 
-                        <div class="portfolio-grid portfolio-gallery grid-4 gutter">
+                        <div class="portfolio--items portfolio-grid portfolio-gallery grid-4 gutter">
                         <?php
 
                             $args = array(
                                 'post_type' => 'book',
-                                'posts_per_page' => $this->postNumber,
+                                'posts_per_page' => 2,
                             );
                             $query = new WP_Query( $args );
 
@@ -181,8 +181,8 @@ class OurBookPlugin {
                                     'current_page' => ( get_query_var('paged') ) ? get_query_var('paged') : 1,
                                     'posts' => json_encode( $query->query_vars ),
                                     'max_pages' => $query->max_num_pages,
-                                    'postNumber' => $this->postNumber,
-                                    'col' => $this->column,
+                                    'postNumber' => 2,
+                                    'col' => 3,
                                     'btnLabel' => esc_html__( 'Load More', 'textdomain' ),
                                     'btnLodingLabel' => esc_html__( 'Loading....', 'textdomain' ),
                                 )
