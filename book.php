@@ -36,9 +36,14 @@ class OurBookPlugin {
 		add_action( 'plugins_loaded', array( $this, 'book_load_textdomain' ) );
 		add_action( 'admin_menu', array( $this, 'book_add_metabox' ) );
 		add_action( 'save_post', array( $this, 'book_save_image' ) );
-		add_shortcode( 'books', array( $this,'Bood_Shortcode_Add') );
+		add_shortcode( 'books', array( $this,'book_shortcode_add') );
 		add_action( 'admin_enqueue_scripts', array( $this, 'book_admin_assets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'book_fontend_assets' ) );
+
+        // Action hook
+
+        add_action( 'wp_ajax_loadmore', array( $this,'book_load_ajax') );
+        add_action( 'wp_ajax_nopriv_loadmore', array( $this,'book_load_ajax' ) );
 
 		$this->load_includes();
 	}
@@ -61,40 +66,27 @@ class OurBookPlugin {
     }
 
 	function book_fontend_assets(){
-		wp_enqueue_style( 'book-bootstrap', plugin_dir_url( __FILE__ ) . "assets/css/bootstrap.css", null, BOOK_HELPER_VERSION );
+		//wp_enqueue_style( 'book-bootstrap', plugin_dir_url( __FILE__ ) . "assets/css/bootstrap.css", null, BOOK_HELPER_VERSION );
 		wp_enqueue_style( 'book-porfolio-style', plugin_dir_url( __FILE__ ) . "assets/css/portfolio.css", null, BOOK_HELPER_VERSION );
 
-		wp_enqueue_script( 'book-bootstrap-js', plugin_dir_url( __FILE__ ) . "assets/js/bootstrap.min.js", array(
-			'jquery',
-		), BOOK_HELPER_VERSION, true );
-		
-		wp_enqueue_script( 'magnific-popup-options-js', plugin_dir_url( __FILE__ ) . "assets/js/magnific-popup-options.js", array(
-			'jquery',
-		), BOOK_HELPER_VERSION, true );
 
-		wp_enqueue_script( 'imagesloaded-js', plugin_dir_url( __FILE__ ) . "assets/js/imagesloaded.js", array(
-			'jquery',
-		), BOOK_HELPER_VERSION, true );
+		// wp_enqueue_script( 'book-bootstrap-js', plugin_dir_url( __FILE__ ) . "assets/js/bootstrap.min.js", array(
+		// 	'jquery',
+		// ), BOOK_HELPER_VERSION, true );
 
 		wp_enqueue_script( 'isotope-js', plugin_dir_url( __FILE__ ) . "assets/js/isotope.pkgd.min.js", array(
 			'jquery',
 		), BOOK_HELPER_VERSION, true );
 
-		wp_enqueue_script( 'book-isotope-js', plugin_dir_url( __FILE__ ) . "assets/js/jquery.isotope.js", array(
-			'jquery',
-		), BOOK_HELPER_VERSION, true );
-
 		wp_enqueue_script( 'portfolio-js', plugin_dir_url( __FILE__ ) . "assets/js/portfolio.js", array(
 			'jquery',
-			'magnific-popup-options-js',
-		     'imagesloaded-js',
 		     'isotope-js'
 		), BOOK_HELPER_VERSION, true );
 
-		wp_localize_script( 'portfolio-js', 'mealurl', array( 'ajaxurl' => $ajaxurl ) );
+        
 	}
 
-	function book_admin_assets() {
+	public function book_admin_assets() {
 		wp_enqueue_style( 'book-admin-style', plugin_dir_url( __FILE__ ) . "assets/admin/css/style.css", null, time() );
 		wp_enqueue_style( 'jquery-ui-css', '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css', null, time() );
 		wp_enqueue_script( 'book-admin-js', plugin_dir_url( __FILE__ ) . "assets/admin/js/main.js", array(
@@ -103,145 +95,160 @@ class OurBookPlugin {
 		), time(), true );
 	}
 
+    public function book_load_ajax(){
+				   			
+        $args = array(
+            'post_type' => 'book',
+            'posts_per_page' => $_POST['postNumber'],
+            'paged' => $_POST['page'] + 1
+        );
+        $query = new WP_Query( $args );
 
-	function Bood_Shortcode_Add(){
+        // Book Loop						
+        if( $query->have_posts() ):
+            while( $query->have_posts() ): $query->the_post();
+            $image_url = esc_attr(get_post_meta(get_the_ID(),'book_image_url',true));
+            $terms = get_the_terms( get_the_ID(), 'bookcategory' );
+            $cat = array();
+            $id = '';
+            if( $terms ){
+                foreach( $terms as $term ){
+                    $cat[] = $term->name.' ';
+                    $slug = $term->slug;
+                    $id  .= ' '.$term->slug.'-'.$term->term_id;
+                }
+            }
+
+?>		
+        <div class="portfolio--item portfolio-item <?php echo esc_attr($id);?>">
+            <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery" title="Bread">
+                <img src="<?php echo esc_url($image_url);?>" alt=""/>
+                <div class="portfolio-hover-title">
+                    <div class="portfolio-content">
+                        <h4><?php the_title();?></h4>
+                        <div class="portfolio-category">
+                            <span><?php echo esc_html($slug);?></span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <?php 
+        endwhile;
+        wp_reset_postdata();
+        endif;
+        die();
+        ?>	
+    
+    </div>
+    <?php
+    }
+
+	public function book_shortcode_add(){
 		ob_start();
 		?>
-
-<div class="section bg-white pt-2 pb-2 text-center" data-aos="fade">
+        <div class="portfolio--items section" data-aos="fade">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="text-center">
                             <ul class="portfolio-filter text-center">
                                 <li class="active"><a href="#" data-filter="*"> All</a></li>
-                                <li><a href="#" data-filter=".cat1">Salad</a></li>
-                                <li><a href="#" data-filter=".cat2">Bread</a></li>
-                                <li><a href="#" data-filter=".cat3">Fish</a></li>
-                                <li><a href="#" data-filter=".cat4">Meat</a></li>
-                                <li><a href="#" data-filter=".cat5">Fruits</a></li>
+                                <?php 
+                                    $category = get_terms( 'bookcategory', array( 'hide_empty' => true ));
+                                    foreach ( $category as $w_cat ) :
+                                        echo '<li><a href="#" data-filter=".'.$w_cat->slug.'-'.$w_cat->term_id.'">'.$w_cat->name.'</a></li>';
+                                    endforeach;
+                                ?>
                             </ul>
                         </div>
 
                         <div class="portfolio-grid portfolio-gallery grid-4 gutter">
-                            
-                            <div class="portfolio-item cat2 cat3 cat4">
-                                <a href="imgs/img1.jpg" class="portfolio-image popup-gallery" title="Bread">
-                                    <img src="imgs/img1.jpg" alt=""/>
+                        <?php 
+					
+                            $args = array(
+                                'post_type' => 'book',
+                                'posts_per_page' => $this->postNumber,
+                            );
+                            $query = new WP_Query( $args );
+                    
+                            // Localize
+                            wp_localize_script(
+                                'portfolio-js',
+                                'galleryloadajax',
+                                array(
+                                    'action_url' => admin_url( 'admin-ajax.php' ),
+                                    'current_page' => ( get_query_var('paged') ) ? get_query_var('paged') : 1,
+                                    'posts' => json_encode( $query->query_vars ),
+                                    'max_pages' => $query->max_num_pages,
+                                    'postNumber' => $this->postNumber,
+                                    'col' => $this->column,
+                                    'btnLabel' => esc_html__( 'Load More', 'textdomain' ),
+                                    'btnLodingLabel' => esc_html__( 'Loading....', 'textdomain' ),
+                                )
+                            );
+                    
+                            // Book Loop						
+                            if( $query->have_posts() ):
+                                while( $query->have_posts() ): $query->the_post();
+                                $image_url = esc_attr(get_post_meta(get_the_ID(),'book_image_url',true));
+                                $terms = get_the_terms( get_the_ID(), 'bookcategory' );
+                                $cat = array();
+                                $id = '';
+                                if( $terms ){
+                                    foreach( $terms as $term ){
+                                        $cat[] = $term->name.' ';
+                                        $slug = $term->slug;
+                                        $id  .= ' '.$term->slug.'-'.$term->term_id;
+                                    }
+                                }
+                    
+                          ?>		
+                            <div class="portfolio--item portfolio-item <?php echo esc_attr($id);?>">
+                                <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery" title="Bread">
+                                    <img src="<?php echo esc_url($image_url);?>" alt=""/>
                                     <div class="portfolio-hover-title">
                                         <div class="portfolio-content">
-                                            <h4>Branding</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
+                                            <h4><?php the_title();?></h4>
+                                            <div class="desc">
+                                                <span><?php the_content();?></span>
                                             </div>
                                         </div>
                                     </div>
                                 </a>
                             </div>
-                            <div class="portfolio-item cat2 cat3 cat4">
-                                <a href="imgs/img9.jpg" class="portfolio-image popup-gallery" title="Bread">
-                                    <img src="imgs/img9.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Branding</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat1 cat2 cat3">
-                                <a href="imgs/img2.jpg" class="portfolio-image popup-gallery" title="Design">
-                                    <img src="imgs/img2.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Design</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat1 cat4">
-                                <a href="imgs/img10.jpg" class="portfolio-image popup-gallery" title="Photography">
-                                    <img src="imgs/img10.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Photography</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat3 cat5">
-                                <a href="imgs/img4.jpg" class="portfolio-image popup-gallery" title="Marketing">
-                                    <img src="imgs/img4.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Marketing</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat4 cat5">
-                                <a href="imgs/img5.jpg" class="portfolio-image popup-gallery" title="Web Desgin">
-                                    <img src="imgs/img5.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Web Design</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat2 cat3">
-                                <a href="imgs/img7.jpg" class="portfolio-image popup-gallery" title="Media">
-                                    <img src="imgs/img7.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Media</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="portfolio-item cat3 cat4 cat5">
-                                <a href="imgs/img6.jpg" class="portfolio-image popup-gallery" title="Portfolio">
-                                    <img src="imgs/img6.jpg" alt=""/>
-                                    <div class="portfolio-hover-title">
-                                        <div class="portfolio-content">
-                                            <h4>Portfolio</h4>
-                                            <div class="portfolio-category">
-                                                <span>Cat 1</span>
-                                                <span>Cat 2</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
+                            <?php 
+                            endwhile;
+                            wp_reset_postdata();
+                            echo '<span class="dataload"></span>';
+                            endif;
+                            ?>	
+                        
                         </div>
+
+                            
                     </div>
+
+                   
                 </div>
+                
             </div>
         </div> <!-- .section -->
+
+        <?php 
+                                // Portfolio Footer Start
+                                if( $query->max_num_pages > 0 ):
+                                ?>
+                                <div class="portfolio--footer">
+                                    <div class="load-more-btn">
+                                        <a class="btn loadAjax btn-default"><?php esc_html_e( 'Load More', 'book' ); ?></a>
+                                    </div>
+                                </div>
+                                <?php 
+                                endif;
+                                ?>
+
+                      
 
 		<?php 
 		return ob_get_clean();

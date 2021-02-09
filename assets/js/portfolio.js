@@ -35,44 +35,89 @@
          magnific popup init
          ------------------------------------------------------- */
 
-        $(".portfolio-gallery").each(function () {
-            $(this).find(".popup-gallery").magnificPopup({
-                type: "image",
-                gallery: {
-                    enabled: true
-                }
-            });
-        });
-
-
-        // $("#loadmorepb").on('click', function () {
-        //     var current_offset = $(".portfolio-grid").data('images');
-        //     var sid = $(".portfolio-grid").data('sid');
-        //     var ni = $(".portfolio-grid").data('ni');
-        //     var nonce = $("#loadmorep").val();
-        //     $.post(mealurl.ajaxurl, {
-        //         action:'loadmorep',
-        //         nonce:nonce,
-        //         offset:current_offset,
-        //         sid:sid
-        //     }, function (data) {
-        //         $(".portfolio-grid").data('images',(parseInt(current_offset)+parseInt(ni)))
-        //         var items = $(data).find(".portfolio-item");
-        //         console.log(items);
-        //         $portfolio.append(items);
-        //         imagesLoaded($portfolio,function(){
-        //             $portfolio.isotope('appended',items);
-        //             $(".portfolio-gallery").each(function () {
-        //                 $(this).find(".popup-gallery").magnificPopup({
-        //                     type: "image",
-        //                     gallery: {
-        //                         enabled: true
-        //                     }
-        //                 });
-        //             });
-        //         });
+        // $(".portfolio-gallery").each(function () {
+        //     $(this).find(".popup-gallery").magnificPopup({
+        //         type: "image",
+        //         gallery: {
+        //             enabled: true
+        //         }
         //     });
         // });
+
+        var $loadbutton = $( '.loadAjax' );
+       // alert("alert "+ $loadbutton);
+		if( $loadbutton.length ){
+			
+			// When default max pages 1 remove load more button 
+			if( galleryloadajax.max_pages == 1 ){
+				$loadbutton.remove();
+			}
+			//
+			$loadbutton.on( 'click', function(){
+				
+				var $button = $( this ),
+					$data;
+				
+				$data =  {
+					'action' : 'loadmore',
+					'query'  : galleryloadajax.posts,
+					'page'   : galleryloadajax.current_page,
+					'postNumber'   : galleryloadajax.postNumber,
+					'col'   : galleryloadajax.col,
+				};
+				
+				$.ajax({
+					
+					url  : galleryloadajax.action_url,
+					data : $data,
+					type : 'POST',
+					beforeSend : function( xhr ){
+						
+						$button.text( galleryloadajax.btnLodingLabel );
+						
+					},
+					success: function( data ){
+						var $dataload = $('.dataload'),
+						    $portfolioItems = $dataload.parent('.portfolio--items');
+						if( data ) {
+							// insert new posts
+							$dataload.before(data);
+							// increment page
+							galleryloadajax.current_page++;
+							
+							if ( $portfolioItems.length ) {
+								setTimeout(function () {
+									$portfolioItems.isotope('reloadItems').isotope({
+										animationEngine: 'best-available',
+										itemSelector: '.portfolio--item'
+									});
+								}, 300);
+							}
+							
+							
+							// Change Button text From loading
+							$button.text( galleryloadajax.btnLabel ); 
+							
+							// if last page, remove the button							
+							if ( galleryloadajax.current_page == galleryloadajax.max_pages ){
+								$button.remove(); 
+							} 
+							
+						} else {
+							// if no data, remove the button as well
+							$button.remove(); 
+						}
+							
+					}
+					
+				});
+				
+				return false;	
+				
+			} );
+			
+			
+		}
 
 
     });

@@ -1,8 +1,8 @@
 .portfolio-filter
 {
     margin: 50px 0; 
-
     list-style: none;
+    text-align: center;
 }
 .portfolio-filter li
 {
@@ -37,17 +37,12 @@
 }
 .portfolio-filter li a:hover
 {
-    color: #fff;
-    border-radius: 3px; 
-    background: #ccc;
+    color: #e82828;
 }
 .portfolio-filter li.active a
 {
     padding: 10px 20px;
-
-    color: #fff;
-    border-radius: 3px; 
-    background: #ccc;
+    color: #e82828;
 }
 @media (max-width: 667px)
 {
@@ -94,7 +89,7 @@
             transition: all .3s;
 
     opacity: 0;
-    background-color: rgba(0, 0, 0, .9);
+    background-color: #e62323;
 
     -webkit-box-pack: center;
     -webkit-justify-content: center;
@@ -276,7 +271,7 @@
 }
 .portfolio-grid.grid-4.gutter .portfolio-item
 {
-    width: 23%;
+    width: 31%;
     margin-right: 2%;
     margin-bottom: 2%;
 }
@@ -382,4 +377,7 @@
 {
     -webkit-transition: none;
             transition: none;
+}
+.load-more-btn {
+    text-align: center;
 }

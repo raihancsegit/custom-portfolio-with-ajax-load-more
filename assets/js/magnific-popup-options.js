@@ -1,3 +1,7 @@
+;(function ($) {
+
+    "use strict"; // use strict to start
+
 $(document).ready(function() {
   // MagnificPopup
 	var magnifPopup = function() {
@@ -46,3 +50,5 @@ $(document).ready(function() {
 	magnifVideo();
 
 });
+
+})(jQuery);
