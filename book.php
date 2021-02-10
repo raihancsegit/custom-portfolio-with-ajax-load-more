@@ -66,13 +66,7 @@ class OurBookPlugin {
     }
 
 	function book_fontend_assets(){
-		//wp_enqueue_style( 'book-bootstrap', plugin_dir_url( __FILE__ ) . "assets/css/bootstrap.css", null, BOOK_HELPER_VERSION );
 		wp_enqueue_style( 'book-porfolio-style', plugin_dir_url( __FILE__ ) . "assets/css/portfolio.css", null, BOOK_HELPER_VERSION );
-
-
-		// wp_enqueue_script( 'book-bootstrap-js', plugin_dir_url( __FILE__ ) . "assets/js/bootstrap.min.js", array(
-		// 	'jquery',
-		// ), BOOK_HELPER_VERSION, true );
 
 		wp_enqueue_script( 'isotope-js', plugin_dir_url( __FILE__ ) . "assets/js/isotope.pkgd.min.js", array(
 			'jquery',
@@ -144,7 +138,10 @@ class OurBookPlugin {
     <?php
     }
 
-	public function book_shortcode_add(){
+	public function book_shortcode_add($atts, $content = null){
+        $a = shortcode_atts( array(
+            'per_page' => 3,
+        ), $atts );
 		ob_start();
 		?>
         <div class="section" data-aos="fade">
@@ -168,7 +165,7 @@ class OurBookPlugin {
 
                             $args = array(
                                 'post_type' => 'book',
-                                'posts_per_page' => 2,
+                                'posts_per_page' => $a['per_page'],
                             );
                             $query = new WP_Query( $args );
 
@@ -181,10 +178,10 @@ class OurBookPlugin {
                                     'current_page' => ( get_query_var('paged') ) ? get_query_var('paged') : 1,
                                     'posts' => json_encode( $query->query_vars ),
                                     'max_pages' => $query->max_num_pages,
-                                    'postNumber' => 2,
+                                    'postNumber' => $a['per_page'],
                                     'col' => 3,
-                                    'btnLabel' => esc_html__( 'Load More', 'textdomain' ),
-                                    'btnLodingLabel' => esc_html__( 'Loading....', 'textdomain' ),
+                                    'btnLabel' => esc_html__( 'Load More', 'book' ),
+                                    'btnLodingLabel' => esc_html__( 'Loading....', 'book' ),
                                 )
                             );
 
@@ -205,7 +202,7 @@ class OurBookPlugin {
 
                           ?>
                             <div class="portfolio--item portfolio-item <?php echo esc_attr($id);?>">
-                                <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery" title="Bread">
+                                <a href="<?php echo esc_url($image_url);?>" class="portfolio-image popup-gallery">
                                     <img src="<?php echo esc_url($image_url);?>" alt=""/>
                                     <div class="portfolio-hover-title">
                                         <div class="portfolio-content">
@@ -225,32 +222,22 @@ class OurBookPlugin {
                             ?>
 
                         </div>
-
-
                     </div>
-
-
                 </div>
-
             </div>
         </div> <!-- .section -->
 
         <?php
                                 // Portfolio Footer Start
-                                if( $query->max_num_pages > 0 ):
-                                ?>
-                                <div class="portfolio--footer">
-                                    <div class="load-more-btn">
-                                        <a class="btn loadAjax btn-default"><?php esc_html_e( 'Load More', 'book' ); ?></a>
-                                    </div>
-                                </div>
-                                <?php
-                                endif;
-                                ?>
-
-
-
-		<?php
+             if( $query->max_num_pages > 0 ):
+         ?>
+                <div class="portfolio--footer">
+                    <div class="load-more-btn">
+                         <a class="btn loadAjax btn-default"><?php esc_html_e( 'Load More', 'book' ); ?></a>
+                    </div>
+                </div>
+        <?php
+           endif;
 		return ob_get_clean();
 	}
 

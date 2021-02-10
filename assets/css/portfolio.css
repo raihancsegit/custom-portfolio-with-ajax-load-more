@@ -378,6 +378,15 @@
     -webkit-transition: none;
             transition: none;
 }
-.load-more-btn {
+
+.portfolio-content span {
+    color:#fff !important;
+}
+
+.load-more-btn a {
+    background: red;
+    padding: 10px;
+    border-radius: 4px;
+    color: #fff;
     text-align: center;
 }
