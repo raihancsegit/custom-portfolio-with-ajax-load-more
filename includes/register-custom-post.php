@@ -26,7 +26,7 @@ function Register_Book_type()
         'label' => esc_html__('Book', 'book'),
         'description' => esc_html__('Book Post Type', 'book'),
         'labels' => $labels,
-        'supports' => array('title', 'editor', 'author', 'thumbnail'),
+        'supports' => array('title', 'editor'),
         'taxonomies' => array('Book-tag', 'Book-category'),
         'public' => true,
         'show_ui' => true,
