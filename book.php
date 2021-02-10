@@ -62,7 +62,6 @@ class OurBookPlugin {
         // custom post type
         require_once  BOOK_HELPER_INCLUDES_DIR . 'register-custom-post.php';
 
-
     }
 
 	function book_fontend_assets(){
@@ -120,8 +119,8 @@ class OurBookPlugin {
                 <div class="portfolio-hover-title">
                     <div class="portfolio-content">
                         <h4><?php the_title();?></h4>
-                        <div class="portfolio-category">
-                            <span><?php echo esc_html($slug);?></span>
+                        <div class="desc">
+                            <span><?php the_content();?></span>
                         </div>
                     </div>
                 </div>
