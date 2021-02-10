@@ -41,7 +41,6 @@ class OurBookPlugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'book_fontend_assets' ) );
 
         // Action hook
-
         add_action( 'wp_ajax_loadmore', array( $this,'book_load_ajax') );
         add_action( 'wp_ajax_nopriv_loadmore', array( $this,'book_load_ajax' ) );
 
